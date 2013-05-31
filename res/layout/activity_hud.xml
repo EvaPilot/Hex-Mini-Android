@@ -54,6 +54,89 @@
             android:layout_alignParentBottom="true"
             android:background="@drawable/btn_take_off" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/takeOffBtn"
+            android:layout_below="@+id/stopBtn" >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true" >
+
+                    <ImageView
+                        android:id="@+id/joystickLeftBgImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="16dp"
+                        android:alpha="0.5"
+                        android:src="@drawable/joystick_bg" />
+
+                    <ImageView
+                        android:id="@+id/joystickLeftThumbImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="32dp"
+                        android:layout_marginRight="32dp"
+                        android:alpha="0.5"
+                        android:src="@drawable/joystick_roll_pitch" />
+
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/joystickLeftView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageView
+                    android:id="@+id/joystickRightBgImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginRight="15dp"
+                    android:alpha="0.5"
+                    android:src="@drawable/joystick_bg" />
+
+                <ImageView
+                    android:id="@+id/joystickRightThumbImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/joystickRightBgImageView"
+                    android:layout_alignTop="@+id/joystickRightBgImageView"
+                    android:layout_marginRight="36dp"
+                    android:layout_marginTop="37dp"
+                    android:alpha="0.5"
+                    android:src="@drawable/joystick_rudder_throttle" />
+
+                <View
+                    android:id="@+id/joystickRightView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
     </RelativeLayout>
 
 </LinearLayout>
