@@ -45,6 +45,7 @@ import com.parrot.freeflight.ui.listeners.OnSeekChangedListener;
 import com.parrot.freeflight.utils.FontUtils;
 */
 
+
 @SuppressLint("ValidFragment")
 public class SettingsDialog extends DialogFragment
         implements
