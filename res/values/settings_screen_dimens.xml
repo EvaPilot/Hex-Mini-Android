@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="setttings_navigation_buton_width">15dp</dimen>
+    <dimen name="settings_button_h_padding">10dp</dimen>
+    <dimen name="settings_title_text_size">22sp</dimen>
+    <dimen name="settings_button_left_padding">10dp</dimen>
+    <dimen name="settings_button_right_padding">12dp</dimen>
     
 </resources>
