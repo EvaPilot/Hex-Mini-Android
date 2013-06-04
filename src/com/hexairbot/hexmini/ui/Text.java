@@ -11,7 +11,7 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.hexairbot.hexmini.ui.GLSprite;
+import com.hexairbot.hexmini.ui.gl.GLSprite;
 
 public class Text extends Sprite{
 

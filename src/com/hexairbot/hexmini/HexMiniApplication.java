@@ -14,17 +14,6 @@ public class HexMiniApplication
     
 	private ApplicationSettings settings;
 	
-	/*
-	static {
-		System.loadLibrary("avutil");
-		System.loadLibrary("swscale");
-		System.loadLibrary("avcodec");
-		System.loadLibrary("avfilter");
-		System.loadLibrary("avformat");
-		System.loadLibrary("avdevice");
-		System.loadLibrary("adfreeflight");
-	}*/
-	
 	@SuppressLint("NewApi")
     @Override
 	public void onCreate() 

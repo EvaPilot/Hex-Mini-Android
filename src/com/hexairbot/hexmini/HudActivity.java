@@ -23,45 +23,38 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import com.hexairbot.hexmini.ui.*;
+import com.hexairbot.hexmini.ui.joystick.AnalogueJoystick;
+import com.hexairbot.hexmini.ui.joystick.JoystickBase;
+import com.hexairbot.hexmini.ui.joystick.JoystickFactory;
+import com.hexairbot.hexmini.ui.joystick.JoystickListener;
 import com.hexairbot.hexmini.HudViewController.JoystickType;
 import com.hexairbot.hexmini.modal.ApplicationSettings;
-import com.hexairbot.hexmini.modal.ApplicationSettings.ControlMode;;
+import com.hexairbot.hexmini.modal.ApplicationSettings.ControlMode;
 
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- * 
- * @see SystemUiHider
- */
 @SuppressLint("NewApi")
 public class HudActivity extends FragmentActivity implements SettingsDialogDelegate, OnTouchListener{
-    private SettingsDialog settingsDialog;
+	private static final String TAG = HudActivity.class.getSimpleName();
+	
+	private SettingsDialog settingsDialog;
     private HudViewController hudVC;
 	
     private boolean isLeftHanded;
-    private boolean acceleroEnabled;
     private JoystickListener rollPitchListener;
-    private JoystickListener gazYawListener;
+    private JoystickListener rudderThrottleListener;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); 
 		
-		hudVC = new HudViewController(this, false);
+		hudVC = new HudViewController(this);
 		
-		initListeners();
+		initButtonListeners();
+		initJoystickListeners();
 		
-		applyJoypadConfig(ControlMode.NORMAL_MODE, false);
 		
-        //if (!isLeftHanded) {
-
-       // } else {
-//        	hudVC.setJoysticks(joystickRight, joystickLeft);
-//        }
-
-		//setContentView(R.layout.activity_hud);
+		initJoysticks(JoystickType.ANALOGUE, JoystickType.ANALOGUE, isLeftHanded);
 	}
 	
 	@Override
@@ -110,7 +103,7 @@ public class HudActivity extends FragmentActivity implements SettingsDialogDeleg
 		return false;
 	}
 	
-	private void initListeners(){
+	private void initButtonListeners(){
 		hudVC.setSettingsBtnClickListener(new OnClickListener() {
 			
 			@Override
@@ -137,65 +130,30 @@ public class HudActivity extends FragmentActivity implements SettingsDialogDeleg
 			}
 		});
 	}
-	
- 
-    private void applyJoypadConfig(ControlMode controlMode, boolean isLeftHanded)
-    {
-        switch (controlMode) {
-        case NORMAL_MODE:
-            initVirtualJoysticks(JoystickType.ANALOGUE, JoystickType.ANALOGUE, isLeftHanded);
-            acceleroEnabled = false;
-            break;
-        case ACCELERO_MODE:
-            initVirtualJoysticks(JoystickType.ACCELERO, JoystickType.ANALOGUE, isLeftHanded);
-            acceleroEnabled = true;
-            break;
-        case ACE_MODE:
-            initVirtualJoysticks(JoystickType.NONE, JoystickType.COMBINED, isLeftHanded);
-            acceleroEnabled = true;
-            break;
-        }
-    }
     
-    private void initVirtualJoysticks(JoystickType leftType, JoystickType rightType, boolean isLeftHanded)
+    private void initJoysticks(JoystickType leftType, JoystickType rightType, boolean isLeftHanded)
     {
         JoystickBase joystickLeft = (!isLeftHanded ? hudVC.getJoystickLeft() : hudVC.getJoystickRight());
         JoystickBase joystickRight = (!isLeftHanded ? hudVC.getJoystickRight() : hudVC.getJoystickLeft());
 
         ApplicationSettings settings = getSettings();
 
-//        if (leftType == JoystickType.ANALOGUE) {
-            if (joystickLeft == null || !(joystickLeft instanceof AnalogueJoystick) || joystickLeft.isAbsoluteControl() != settings.isAbsoluteControlEnabled()) {
+        if (joystickLeft == null || !(joystickLeft instanceof AnalogueJoystick) || joystickLeft.isAbsoluteControl() != settings.isAbsoluteControlEnabled()) {
                 joystickLeft = JoystickFactory.createAnalogueJoystick(this, settings.isAbsoluteControlEnabled(), rollPitchListener);
             } 
             else {
                 joystickLeft.setOnAnalogueChangedListener(rollPitchListener);
                 joystickRight.setAbsolute(settings.isAbsoluteControlEnabled());
             }
-//        } else if (leftType == JoystickType.ACCELERO) {
-//            if (joystickLeft == null || !(joystickLeft instanceof AcceleroJoystick) || joystickLeft.isAbsoluteControl() != settings.isAbsoluteControlEnabled()) {
-//                joystickLeft = JoystickFactory.createAcceleroJoystick(this, settings.isAbsoluteControlEnabled(), rollPitchListener);
-//            } else {
-//                joystickLeft.setOnAnalogueChangedListener(rollPitchListener);
-//                joystickRight.setAbsolute(settings.isAbsoluteControlEnabled());
-//            }
-//        }
-//
-//        if (rightType == JoystickType.ANALOGUE) {
-//            if (joystickRight == null || !(joystickRight instanceof AnalogueJoystick) || joystickRight.isAbsoluteControl() != settings.isAbsoluteControlEnabled()) {
-//                joystickRight = JoystickFactory.createAnalogueJoystick(this, false, gazYawListener);
-//            } else {
-//                joystickRight.setOnAnalogueChangedListener(gazYawListener);
-//                joystickRight.setAbsolute(false);
-//            }
-//        } else if (rightType == JoystickType.ACCELERO) {
-//            if (joystickRight == null || !(joystickRight instanceof AcceleroJoystick) || joystickRight.isAbsoluteControl() != settings.isAbsoluteControlEnabled()) {
-//                joystickRight = JoystickFactory.createAcceleroJoystick(this, false, gazYawListener);
-//            } else {
-//                joystickRight.setOnAnalogueChangedListener(gazYawListener);
-//                joystickRight.setAbsolute(false);
-//            }
-//        }
+
+            if (joystickRight == null || !(joystickRight instanceof AnalogueJoystick) || joystickRight.isAbsoluteControl() != settings.isAbsoluteControlEnabled()) {
+                joystickRight = JoystickFactory.createAnalogueJoystick(this, false, rudderThrottleListener);
+            } 
+            else {
+                joystickRight.setOnAnalogueChangedListener(rudderThrottleListener);
+                joystickRight.setAbsolute(false);
+            }
+
 
         if (!isLeftHanded) {
         	hudVC.setJoysticks(joystickLeft, joystickRight);
@@ -209,4 +167,45 @@ public class HudActivity extends FragmentActivity implements SettingsDialogDeleg
     {
         return ((HexMiniApplication) getApplication()).getAppSettings();
     }
+    
+    private void initJoystickListeners()
+    {
+        rollPitchListener = new JoystickListener()
+        {
+            public void onChanged(JoystickBase joy, float x, float y)
+            {
+        		Log.d(TAG, "rollPitchListener onChanged x:" + x + "y:" + y);
+            }
+
+            @Override
+            public void onPressed(JoystickBase joy)
+            {
+            }
+
+            @Override
+            public void onReleased(JoystickBase joy)
+            {
+
+            }
+        };
+
+        rudderThrottleListener = new JoystickListener()
+        {
+            public void onChanged(JoystickBase joy, float x, float y)
+            {
+        		Log.d(TAG, "rudderThrottleListener onChanged x:" + x + "y:" + y);
+            }
+
+            @Override
+            public void onPressed(JoystickBase joy)
+            {
+            }
+
+            @Override
+            public void onReleased(JoystickBase joy)
+            {
+            }
+        };
+    }
+
 }

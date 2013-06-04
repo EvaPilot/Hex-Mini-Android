@@ -30,6 +30,7 @@ implements OnPageChangeListener
 	{
 		this(context, attrs, R.attr.viewPagerIndicatorStyle);	
 	}
+	
 
 	
 	public ViewPagerIndicator(Context context) 

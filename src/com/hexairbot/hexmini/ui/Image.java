@@ -2,6 +2,8 @@ package com.hexairbot.hexmini.ui;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import com.hexairbot.hexmini.ui.gl.GLSprite;
+
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -50,6 +52,9 @@ public class Image extends Sprite
 		
 		if (widthParam == SizeParams.FILL_SCREEN) {
 			sprite.setSize(width, sprite.height);
+		}
+		if(heightParam == SizeParams.FILL_SCREEN){
+			sprite.setSize(sprite.width, height);
 		}
 		
 		super.surfaceChanged(gl, width, height);

@@ -2,6 +2,8 @@ package com.hexairbot.hexmini.ui;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import com.hexairbot.hexmini.ui.gl.GLSprite;
+
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
