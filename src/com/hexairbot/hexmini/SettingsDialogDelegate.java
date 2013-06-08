@@ -1,7 +1,7 @@
 package com.hexairbot.hexmini;
 
 import com.hexairbot.hexmini.SettingsDialog;
-import com.hexairbot.hexmini.modal.ApplicationSettings.EAppSettingProperty;
+//import com.hexairbot.hexmini.modal.ApplicationSettings.EAppSettingProperty;
 
 public interface SettingsDialogDelegate
 {
@@ -23,5 +23,5 @@ public interface SettingsDialogDelegate
      * @param property - one of the EAppSettingProperty values.
      * @param value - value of the property.
      */
-    public void onOptionChangedApp(SettingsDialog dialog, EAppSettingProperty property, Object value);
+//    public void onOptionChangedApp(SettingsDialog dialog, EAppSettingProperty property, Object value);
 }

@@ -2,6 +2,7 @@
 <resources>
     <style parent="@android:Theme.Light" name="HexMiniBase"></style>
     <style parent="HexMiniBase" name="HexMiniTheme"><item name="android:windowNoTitle">true</item><item name="android:windowFullscreen">true</item><item name="android:windowBackground">@color/window_background</item></style>
-    <style parent="HexMiniTheme" name="HexMiniTheme.SettingScreen"><item name="android:windowBackground">@color/transparent</item></style>
+    <style parent="HexMiniTheme" name="HexMiniTheme.SettingScreen"><item name="android:windowBackground">@color/transparent</item>
+</style>
 
 </resources>

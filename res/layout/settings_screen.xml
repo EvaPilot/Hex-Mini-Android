@@ -40,7 +40,7 @@
                     android:textColor="@color/white"
                     android:textSize="@dimen/settings_title_text_size" />
 
-                <com.hexairbot.hexmini.ViewPagerIndicator
+                <com.hexairbot.hexmini.ui.control.ViewPagerIndicator
                     android:id="@+id/pageIndicator"
                     style="@style/ViewPagerIndicatorStyle"
                     android:layout_width="wrap_content"
@@ -79,6 +79,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:src="@drawable/arrow_right_orange" />
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -127,6 +128,7 @@
             </RelativeLayout>
 
         </LinearLayout>
+
     </RelativeLayout>
 
 </LinearLayout>

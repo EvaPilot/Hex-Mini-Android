@@ -20,6 +20,8 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -28,6 +30,8 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+//import android.webkit.WebView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -42,6 +46,7 @@ import com.hexairbot.hexmini.modal.ApplicationSettings;
 //import  com.hexairbot.hexmini.ui.filters.NetworkNameFilter;
 //import  com.hexairbot.hexmini.ui.listeners.OnSeekChangedListener;
 //import  com.hexairbot.hexmini.utils.FontUtils;
+import com.hexairbot.hexmini.ui.control.ViewPagerIndicator;
 
 public class SettingsViewController
         implements OnPageChangeListener,
@@ -52,71 +57,32 @@ public class SettingsViewController
 
     private List<View> settingsViews;
     
+    private TextView titleTextView;
+    
+    private ViewPager viewPager;
+    private ImageButton preBtn;
+    private ImageButton nextBtn;
+    
     private Button defaultSettingsBtn;
     private Button accCalibrateBtn;
     private Button magCalibrateBtn;
-
-    private View btnCalibrateMagneto;
-    private View btnFlatTrim;
-    private View btnDefaultSettings;
-
-    // private CheckBox toggleAceMode;
+    
+    private CheckBox isLeftHandedCheckBox;
+    
+    
     private CheckBox toggleJoypadMode;
     private CheckBox toggleAbsoluteControl;
     private CheckBox toggleLeftHanded;
     private CheckBox togglePairing;
     private CheckBox toggleVideoOnUsb;
     private CheckBox toggleLoopingEnabled;
-    // private CheckBox toggleAltitudeLimited;
-    // private CheckBox toggleAdaptiveVideo;
     private CheckBox toggleOutdoorHull;
     private CheckBox toggleOutdoorFlight;
 
-    private CheckBox[] toggleButtons;
+    private CheckBox[] checkBoxes;
     private View[] clickButtons;
 
-    private TextView titleTextView;
-    private TextView txtDeviceTiltMaxValue;
-    private TextView txtInterfaceOpacityValue;
-    private TextView txtRotationSpeedMax;
-    private TextView txtVerticalSpeedMax;
-    private TextView txtTilt;
-    private TextView txtDroneSoftVersion;
-    private TextView txtDroneHardVersion;
-    private TextView txtInertialHardVersion;
-    private TextView txtInertialSoftVersion;
-    private TextView txtAltitudeLimit;
-
-    private TextView[] motorType = {
-            null, null, null, null
-    };
-    private TextView[] motorHardVersion = {
-            null, null, null, null
-    };
-    private TextView[] motorSoftVersion = {
-            null, null, null, null
-    };
-
-    private EditText editNetworkName;
-
-    private RadioGroup rgVideoCodec;
-    // private RadioGroup rgVideoCodec2;
-    private RadioButton rbVideoVLIB;
-    private RadioButton rbVideoP264;
-    // private RadioButton rbMPEG4_720p;
-    // private RadioButton rbH264_360p;
-    // private RadioButton rbH264_720p;
-
-    private SeekBar seekDeviceTiltMax;
-    private SeekBar seekInterfaceOpacity;
-    private SeekBar seekYawSpeedMax;
     private SeekBar seekVertSpeedMax;
-    private SeekBar seekTilt;
-    private SeekBar seekAltitudeLimit;
-
-    private ViewPager viewPager;
-    private ImageButton preBtn;
-    private ImageButton nextBtn;
 
     private OnSeekBarChangeListener tiltMaxSeekListener;
     private OnSeekBarChangeListener interfaceOpacitySeekListener;
@@ -204,7 +170,23 @@ public class SettingsViewController
         viewPagerIndicator.setViewPager(viewPager);
         viewPagerIndicator.setOnPageChangeListener(this);
         
-    	
+        final int connectionPageIdx = 0;
+        final int interfacePageIdx  = 1;
+        final int modePageIdx       = 2;
+        final int aboutPageIdx      = 3;
+
+        isLeftHandedCheckBox = (CheckBox)settingsViews.get(interfacePageIdx).findViewById(R.id.isLeftHandedCheckBox);
+        
+        WebView aboutWebView = (WebView)settingsViews.get(aboutPageIdx).findViewById(R.id.aboutWebView);
+        aboutWebView.getSettings().setJavaScriptEnabled(true);  
+        aboutWebView.loadUrl("file:///android_asset/About.html");
+        
+ 
+        checkBoxes = new CheckBox[] {
+        		isLeftHandedCheckBox
+        };
+        
+        
     	/*
         res = context.getResources();
         inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -585,63 +567,16 @@ public class SettingsViewController
     }
 
 
-    public void setNetworkNameOnEditorActionListener(OnEditorActionListener listener)
-    {
-        this.editNetworkNameActionListener = listener;
-        
-        editNetworkName.setOnEditorActionListener(new OnEditorActionListener() {
-            
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
-            {   
-                inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
-                // Avoid the focus to be put in the field automatically
-                setNetworkNameFocusable(false);
-
-                if (editNetworkNameActionListener != null) {
-                    return editNetworkNameActionListener.onEditorAction(v, actionId, event);
-                } else {
-                    return false;
-                }
-            }
-        });
-        
-        editNetworkName.setOnTouchListener(new OnTouchListener() {
-
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    v.setFocusableInTouchMode(true);
-                }
-
-                return false;
-            }
-        });
-    }
-
-
-    public void setToggleButtonsCheckedListener(OnCheckedChangeListener listener)
+    public void setCheckBoxesCheckedListener(OnCheckedChangeListener listener)
     {
         this.globalOnCheckedChangeListener = listener;
 
-        for (int i = 0; i < toggleButtons.length; ++i) {
-            CheckBox button = toggleButtons[i];
+        for (int i = 0; i < checkBoxes.length; ++i) {
+            CheckBox button = checkBoxes[i];
 
             if (button != null)
                 button.setOnCheckedChangeListener(globalOnCheckedChangeListener);
-        }
-    }
-
-
-    public void setRadioButtonsCheckedListener(android.widget.RadioGroup.OnCheckedChangeListener listener)
-    {
-        if (rgVideoCodec != null) {
-            rgVideoCodec.setOnCheckedChangeListener(listener);
-
-            // if (rgVideoCodec2 != null) {
-            // rgVideoCodec2.setOnCheckedChangeListener(listener);
-            // }
         }
     }
 
@@ -867,58 +802,6 @@ public class SettingsViewController
     }
 */
 
-    public void setDroneVersion(String hardwareVersion, String softwareVersion)
-    {
-        safeSetText(txtDroneHardVersion, hardwareVersion);
-        safeSetText(txtDroneSoftVersion, softwareVersion);
-    }
-
-
-    public void setInertialVersion(String inertialHardwareVersion, String inertialSoftwareVersion)
-    {
-        if (inertialHardwareVersion != null) {
-            safeSetText(txtInertialHardVersion, inertialHardwareVersion.length() > 0 ? inertialHardwareVersion : "0.0");
-        } else {
-            txtInertialHardVersion.setText("0.0");
-        }
-
-        if (inertialSoftwareVersion != null) {
-            safeSetText(txtInertialSoftVersion, inertialSoftwareVersion.length() > 0 ? inertialSoftwareVersion : "0.0");
-        } else {
-            txtInertialHardVersion.setText("0.0");
-        }
-    }
-
-
-    public void setMotorVersion(int motorIdx, String type, String hardVersion, String softVersion)
-    {
-        safeSetText(motorType[motorIdx], type);
-        safeSetText(motorHardVersion[motorIdx], hardVersion);
-        safeSetText(motorSoftVersion[motorIdx], softVersion);
-    }
-
-
-    public void setNetworkName(String networkName)
-    {
-        editNetworkName.setText(networkName);
-    }
-
-
-    public void setNetworkNameFocusable(boolean b)
-    {
-        editNetworkName.setFocusableInTouchMode(b);
-
-        if (!b) {
-            editNetworkName.clearFocus();
-        }
-    }
-
-
-    public String getNetworkName()
-    {
-        return editNetworkName.getText().toString();
-    }
-
 
     public void setPairing(boolean checked)
     {
@@ -983,22 +866,6 @@ public class SettingsViewController
     }
 
 
-    public void setVideoP264Checked(boolean b)
-    {
-        if (rbVideoP264 != null) {
-            rbVideoP264.setChecked(b);
-        }
-    }
-
-
-    public void setVideoVLIBChecked(boolean b)
-    {
-        if (rbVideoVLIB != null) {
-            rbVideoVLIB.setChecked(b);
-        }
-    }
-
-
     public void setOutdoorFlight(boolean checked)
     {
         toggleOutdoorFlight.setChecked(checked);
@@ -1008,17 +875,6 @@ public class SettingsViewController
     public boolean isOutdoorFlightChecked()
     {
         return toggleOutdoorFlight.isChecked();
-    }
-
-
-    public void setOutdoorFlightControlsEnabled(boolean enabled)
-    {
-        if (connected) {
-            toggleOutdoorFlight.setEnabled(enabled);
-            seekYawSpeedMax.setEnabled(enabled);
-            seekVertSpeedMax.setEnabled(enabled);
-            seekTilt.setEnabled(enabled);
-        }
     }
 
 

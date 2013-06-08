@@ -26,6 +26,7 @@ import com.hexairbot.hexmini.ui.Image.SizeParams;
 import com.hexairbot.hexmini.ui.Sprite.Align;
 import com.hexairbot.hexmini.ui.joystick.JoystickBase;
 
+
 public class HudViewController 
 	implements OnTouchListener,
 			   OnGestureListener

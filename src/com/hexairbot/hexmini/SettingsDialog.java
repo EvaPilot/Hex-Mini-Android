@@ -1,6 +1,8 @@
 
 package com.hexairbot.hexmini;
 
+import com.hexairbot.hexmini.modal.ApplicationSettings;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -64,11 +66,13 @@ public class SettingsDialog extends DialogFragment
 
     //private DroneConfigChangedReceiver configChangedReceiver;
 
+    
     private String ownerMac;
     
     private SettingsViewController settingsVC;
-    /*
+    
     private ApplicationSettings appSettings;
+    /*
     private DroneConfig droneSettings;
     private DroneControlService mService;
     */
@@ -164,7 +168,7 @@ public class SettingsDialog extends DialogFragment
 
     private void initListeners()
     {
-//        view.setToggleButtonsCheckedListener(this);
+        settingsVC.setCheckBoxesCheckedListener(this);
 //        view.setSeekBarsOnChangeListener(this);
 //        view.setNetworkNameOnEditorActionListener(this);
 //        view.setRadioButtonsCheckedListener(this);
@@ -174,13 +178,13 @@ public class SettingsDialog extends DialogFragment
 
     private void loadSettings()
     {
-//        appSettings = ((FreeFlightApplication) mService.getApplicationContext()).getAppSettings();
+        appSettings = HexMiniApplication.sharedApplicaion().getAppSettings();
 //
 //        fillUiControls();
 //
 //        view.enableAvailableSettings();
 //
-//        initListeners();
+        initListeners();
     }
 
 
@@ -313,47 +317,16 @@ public class SettingsDialog extends DialogFragment
 
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
     {
-    	/*
+
         switch (buttonView.getId())
         {
-        case R.id.toggleAcceleroDisabled: {
-            ControlMode controlMode = (isChecked ? ControlMode.NORMAL_MODE : ControlMode.ACCELERO_MODE);
-            appSettings.setControlMode(controlMode);
-            delegate.onOptionChangedApp(this, EAppSettingProperty.CONTROL_MODE_PROP, controlMode);
-            break;
-        }
-        case R.id.toggleAbsoluteControl:
-            appSettings.setAbsoluteControlEnabled(isChecked);
-            delegate.onOptionChangedApp(this, EAppSettingProperty.MAGNETO_ENABLED_PROP, isChecked);
-            break;
-        case R.id.toggleLeftHanded:
-            appSettings.setLeftHanded(isChecked);
-            delegate.onOptionChangedApp(this, EAppSettingProperty.LEFT_HANDED_PROP, isChecked);
-            break;
-        case R.id.toggleUsbRecord:
-            droneSettings.setRecordOnUsb(isChecked);
-            break;
-        case R.id.toggleLoopingEnabled:
-            appSettings.setFlipEnabled(isChecked);
-            break;
-        case R.id.toggleOutdoorHull:
-            droneSettings.setOutdoorHull(isChecked);
-            break;
-        case R.id.toggleAdaptiveVideo:
-            droneSettings.setAdaptiveVideo(isChecked);
-            break;
-        case R.id.togglePairing:
-            droneSettings.setOwnerMac(isChecked ? ownerMac : NULL_MAC);
-            break;
-        case R.id.toggleOutdoorFlight:
-            view.setOutdoorFlightControlsEnabled(false);
-            droneSettings.setOutdoorFlight(isChecked);
-            mService.triggerConfigUpdate();
+        case R.id.isLeftHandedCheckBox:
+            //appSettings.setLeftHanded(isChecked);
+            //delegate.onOptionChangedApp(this, EAppSettingProperty.LEFT_HANDED_PROP, isChecked);
             break;
         default:
             Log.d(TAG, "Unknown button");
         }
-        */
     }
 
 

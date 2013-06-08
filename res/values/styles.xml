@@ -43,5 +43,4 @@
     <style name="SettingsNavigationButton.Next">
         <item name="android:src" >@drawable/arrow_right_orange</item>
     </style>
-
 </resources>

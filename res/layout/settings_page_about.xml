@@ -4,11 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/test"
+    <WebView
+        android:id="@+id/aboutWebView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.81"
-        android:text="TextView" />
+        android:layout_height="match_parent"
+        android:layout_weight="0.81" />
 
 </LinearLayout>

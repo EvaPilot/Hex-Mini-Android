@@ -1,7 +1,5 @@
 package com.hexairbot.hexmini;
 
-import com.hexairbot.hexmini.modal.ApplicationSettings.EAppSettingProperty;
-import com.hexairbot.hexmini.util.SystemUiHider;
 import com.hexairbot.hexmini.SettingsDialog;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -29,7 +27,6 @@ import com.hexairbot.hexmini.ui.joystick.JoystickFactory;
 import com.hexairbot.hexmini.ui.joystick.JoystickListener;
 import com.hexairbot.hexmini.HudViewController.JoystickType;
 import com.hexairbot.hexmini.modal.ApplicationSettings;
-import com.hexairbot.hexmini.modal.ApplicationSettings.ControlMode;
 
 
 @SuppressLint("NewApi")
@@ -52,7 +49,6 @@ public class HudActivity extends FragmentActivity implements SettingsDialogDeleg
 		
 		initButtonListeners();
 		initJoystickListeners();
-		
 		
 		initJoysticks(JoystickType.ANALOGUE, JoystickType.ANALOGUE, isLeftHanded);
 	}
@@ -90,12 +86,12 @@ public class HudActivity extends FragmentActivity implements SettingsDialogDeleg
 	}
 
 
-	@Override
-	public void onOptionChangedApp(SettingsDialog dialog,
-			EAppSettingProperty property, Object value) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void onOptionChangedApp(SettingsDialog dialog,
+//			EAppSettingProperty property, Object value) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
@@ -138,22 +134,21 @@ public class HudActivity extends FragmentActivity implements SettingsDialogDeleg
 
         ApplicationSettings settings = getSettings();
 
-        if (joystickLeft == null || !(joystickLeft instanceof AnalogueJoystick) || joystickLeft.isAbsoluteControl() != settings.isAbsoluteControlEnabled()) {
-                joystickLeft = JoystickFactory.createAnalogueJoystick(this, settings.isAbsoluteControlEnabled(), rollPitchListener);
-            } 
-            else {
-                joystickLeft.setOnAnalogueChangedListener(rollPitchListener);
-                joystickRight.setAbsolute(settings.isAbsoluteControlEnabled());
-            }
+        if (joystickLeft == null || !(joystickLeft instanceof AnalogueJoystick)) {
+        	joystickLeft = JoystickFactory.createAnalogueJoystick(this, false, rollPitchListener);
+        } 
+        else {
+        	joystickLeft.setOnAnalogueChangedListener(rollPitchListener);
+        	joystickRight.setAbsolute(false);
+        }
 
-            if (joystickRight == null || !(joystickRight instanceof AnalogueJoystick) || joystickRight.isAbsoluteControl() != settings.isAbsoluteControlEnabled()) {
-                joystickRight = JoystickFactory.createAnalogueJoystick(this, false, rudderThrottleListener);
-            } 
-            else {
-                joystickRight.setOnAnalogueChangedListener(rudderThrottleListener);
-                joystickRight.setAbsolute(false);
-            }
-
+        if (joystickRight == null || !(joystickRight instanceof AnalogueJoystick)) {
+        	joystickRight = JoystickFactory.createAnalogueJoystick(this, false, rudderThrottleListener);
+        } 
+        else {
+        	joystickRight.setOnAnalogueChangedListener(rudderThrottleListener);
+        	joystickRight.setAbsolute(false);
+        }
 
         if (!isLeftHanded) {
         	hudVC.setJoysticks(joystickLeft, joystickRight);
