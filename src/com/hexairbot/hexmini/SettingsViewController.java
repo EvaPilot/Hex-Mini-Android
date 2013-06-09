@@ -69,6 +69,18 @@ public class SettingsViewController
     
     private CheckBox isLeftHandedCheckBox;
     
+    private TextView interfaceOpacityTextView;
+    private TextView takeOffThrottleTextView;
+    private TextView aileronAndElevatorDeadBandTextView;
+    private TextView rudderDeadBandTextView;
+    
+    private SeekBar interfaceOpacitySeekBar;
+    private SeekBar takeOffThrottleSeekBar;
+    private SeekBar aileronAndElevatorDeadBandSeekBar;
+    private SeekBar rudderDeadBandSeekBar;
+    
+    private CheckBox[] checkBoxes;
+    private View[] clickButtons;
     
     private CheckBox toggleJoypadMode;
     private CheckBox toggleAbsoluteControl;
@@ -79,47 +91,14 @@ public class SettingsViewController
     private CheckBox toggleOutdoorHull;
     private CheckBox toggleOutdoorFlight;
 
-    private CheckBox[] checkBoxes;
-    private View[] clickButtons;
-
-    private SeekBar seekVertSpeedMax;
-
-    private OnSeekBarChangeListener tiltMaxSeekListener;
-    private OnSeekBarChangeListener interfaceOpacitySeekListener;
-    private OnSeekBarChangeListener yawSpeedMaxSeekListener;
-    private OnSeekBarChangeListener vertSpeedMaxSeekListener;
-    private OnSeekBarChangeListener tiltSeekListener;
-    private OnSeekBarChangeListener altitudeLimitSeekListener;
-
-    private OnCheckedChangeListener globalOnCheckedChangeListener;
-    //private OnSeekChangedListener globalOnSeekChangedListener;
-
-    private String TILT_DIMENTION = " \u00B0";
-    private String INTERFACE_OPACITY_DIMENTION = " %";
-    private String YAW_SPEED_MAX_DIMENTION = " \u00B0/s";
-    private String VERT_SPEED_MAX_DIMENTION = " mm/s";
-    private String ALTITUDE_DIMENSION = " m";
+    private OnSeekBarChangeListener interfaceOpacitySeekBarListener;
+    private OnSeekBarChangeListener takeOffThrottleSeekBarListener;
+    private OnSeekBarChangeListener aileronAndElevatorDeadBandSeekBarListener;
+    private OnSeekBarChangeListener rudderDeadBandSeekBarListener;
 
     private Resources res;
-    private InputMethodManager inputManager;
 
     private int[] titles;
-
-    // Groups of controls that will be enabled/disabled depending on the
-    // conditions.
-    private View[] acceleroOnlyGroup;
-    private View[] magnetoOnlyGroup;
-    private View[] flyingOnlyGroup;
-    private View[] landedOnlyGroup;
-    private View[] connectedOnlyGroup;
-
-    private boolean accelAvailable;
-    private boolean magnetoAvailable;
-    private boolean connected;
-    private boolean flying;
-
-    private OnEditorActionListener editNetworkNameActionListener;
-
 
     public SettingsViewController(Context context, LayoutInflater inflater, ViewGroup container)
     {
@@ -177,6 +156,21 @@ public class SettingsViewController
 
         isLeftHandedCheckBox = (CheckBox)settingsViews.get(interfacePageIdx).findViewById(R.id.isLeftHandedCheckBox);
         
+        interfaceOpacityTextView =  (TextView)settingsViews.get(interfacePageIdx).findViewById(R.id.interfaceOpacityTextView);
+        takeOffThrottleTextView = (TextView)settingsViews.get(modePageIdx).findViewById(R.id.takeOffThrottleTextView);
+        aileronAndElevatorDeadBandTextView = (TextView)settingsViews.get(modePageIdx).findViewById(R.id.aileronAndElevatorDeadBandTextView);
+        rudderDeadBandTextView = (TextView)settingsViews.get(modePageIdx).findViewById(R.id.rudderDeadBandTextView);
+        
+        interfaceOpacitySeekBar = (SeekBar)settingsViews.get(interfacePageIdx).findViewById(R.id.interfaceOpacitySeekBar);
+        takeOffThrottleSeekBar = (SeekBar)settingsViews.get(modePageIdx).findViewById(R.id.takeOffThrottleSeekBar);
+        aileronAndElevatorDeadBandSeekBar = (SeekBar)settingsViews.get(modePageIdx).findViewById(R.id.aileronAndElevatorDeadBandSeekBar);
+        rudderDeadBandSeekBar = (SeekBar)settingsViews.get(modePageIdx).findViewById(R.id.rudderDeadBandSeekBar);
+        
+        interfaceOpacitySeekBar.setMax(100);
+        takeOffThrottleSeekBar.setMax(1000);
+        aileronAndElevatorDeadBandSeekBar.setMax(20);
+        rudderDeadBandSeekBar.setMax(20);
+        
         WebView aboutWebView = (WebView)settingsViews.get(aboutPageIdx).findViewById(R.id.aboutWebView);
         aboutWebView.getSettings().setJavaScriptEnabled(true);  
         aboutWebView.loadUrl("file:///android_asset/About.html");
@@ -186,6 +180,24 @@ public class SettingsViewController
         		isLeftHandedCheckBox
         };
         
+        ApplicationSettings settings = HexMiniApplication.sharedApplicaion().getAppSettings();
+        
+        interfaceOpacitySeekBar.setProgress((int)(settings.getInterfaceOpacity() * 100));
+        safeSetText(interfaceOpacityTextView, interfaceOpacitySeekBar.getProgress() + "%");
+        
+        takeOffThrottleSeekBar.setProgress((int)(settings.getTakeOffThrottle() - 1000));
+        safeSetText(takeOffThrottleTextView, (takeOffThrottleSeekBar.getProgress() + 1000) + "us");
+        
+        aileronAndElevatorDeadBandSeekBar.setProgress((int)(settings.getAileronDeadBand() * 100));
+        safeSetText(aileronAndElevatorDeadBandTextView, aileronAndElevatorDeadBandSeekBar.getProgress() + "%");
+        
+        rudderDeadBandSeekBar.setProgress((int)(settings.getRudderDeadBand() * 100));
+        safeSetText(rudderDeadBandTextView, rudderDeadBandSeekBar.getProgress() + "%");
+        
+        
+        initListeners();
+
+
         
     	/*
         res = context.getResources();
@@ -437,8 +449,92 @@ public class SettingsViewController
 
     private void initListeners()
     {
-
-    	/*
+    	interfaceOpacitySeekBarListener = new OnSeekBarChangeListener() {
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				ApplicationSettings settings = HexMiniApplication.sharedApplicaion().getAppSettings();
+				settings.setInterfaceOpacity(seekBar.getProgress() / 100.0f);
+				settings.save();
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+              safeSetText(interfaceOpacityTextView, progress + "%");
+			}
+		};
+		interfaceOpacitySeekBar.setOnSeekBarChangeListener(interfaceOpacitySeekBarListener);
+    	
+    	takeOffThrottleSeekBarListener = new OnSeekBarChangeListener() {
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				ApplicationSettings settings = HexMiniApplication.sharedApplicaion().getAppSettings();
+				settings.setTakeOffThrottle(seekBar.getProgress() + 1000);
+				settings.save();
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+              safeSetText(takeOffThrottleTextView, (progress + 1000) + "us");
+			}
+		};
+		takeOffThrottleSeekBar.setOnSeekBarChangeListener(takeOffThrottleSeekBarListener);
+		
+    	aileronAndElevatorDeadBandSeekBarListener = new OnSeekBarChangeListener() {
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				ApplicationSettings settings = HexMiniApplication.sharedApplicaion().getAppSettings();
+				settings.setAileronDeadBand(seekBar.getProgress() / 100.f);
+				settings.setElevatorDeadBand(settings.getAileronDeadBand());
+				settings.save();
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+              safeSetText(aileronAndElevatorDeadBandTextView, progress + "%");
+			}
+		};
+		aileronAndElevatorDeadBandSeekBar.setOnSeekBarChangeListener(aileronAndElevatorDeadBandSeekBarListener);
+		
+    	rudderDeadBandSeekBarListener = new OnSeekBarChangeListener() {
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				ApplicationSettings settings = HexMiniApplication.sharedApplicaion().getAppSettings();
+				settings.setRudderDeadBand(seekBar.getProgress() / 100.f);
+				settings.save();
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+              safeSetText(rudderDeadBandTextView, progress + "%");
+			}
+		};
+		rudderDeadBandSeekBar.setOnSeekBarChangeListener(rudderDeadBandSeekBarListener);
+		
+		
+    	
+		/*
         tiltMaxSeekListener = new OnSeekBarChangeListener() {
             public void onStartTrackingTouch(SeekBar seekBar)
             {}
@@ -564,21 +660,21 @@ public class SettingsViewController
             }
         };
         */
+
     }
 
 
-
-    public void setCheckBoxesCheckedListener(OnCheckedChangeListener listener)
-    {
-        this.globalOnCheckedChangeListener = listener;
-
-        for (int i = 0; i < checkBoxes.length; ++i) {
-            CheckBox button = checkBoxes[i];
-
-            if (button != null)
-                button.setOnCheckedChangeListener(globalOnCheckedChangeListener);
-        }
-    }
+//    public void setCheckBoxesCheckedListener(OnCheckedChangeListener listener)
+//    {
+//        this.globalOnCheckedChangeListener = listener;
+//
+//        for (int i = 0; i < checkBoxes.length; ++i) {
+//            CheckBox button = checkBoxes[i];
+//
+//            if (button != null)
+//                button.setOnCheckedChangeListener(globalOnCheckedChangeListener);
+//        }
+//    }
 
 
 //    public void setSeekBarsOnChangeListener(OnSeekChangedListener listener)
@@ -985,74 +1081,5 @@ public class SettingsViewController
             toggleLoopingEnabled.setChecked(loopingEnabled);
         }
 
-    }
-
-
-    public void setConnected(boolean connected)
-    {
-        this.connected = connected;
-    }
-
-
-    public void setAcceleroAvailable(boolean available)
-    {
-        this.accelAvailable = available;
-    }
-
-
-    public void setMagnetoAvailable(boolean available)
-    {
-        this.magnetoAvailable = available;
-    }
-
-
-    public void setFlying(boolean flying)
-    {
-        this.flying = flying;
-    }
-
-
-    public void enableAvailableSettings()
-    {
-        setGroupEnabled(connectedOnlyGroup, connected, false);
-        setGroupEnabled(landedOnlyGroup, !flying, true);
-        setGroupEnabled(flyingOnlyGroup, flying, true);
-        setGroupEnabled(acceleroOnlyGroup, accelAvailable, true);
-        setGroupEnabled(magnetoOnlyGroup, magnetoAvailable, true);
-        setGroupVisible(magnetoOnlyGroup, magnetoAvailable);
-    }
-
-
-    public void disableControlsThatRequireDroneConnection()
-    {
-        setGroupEnabled(connectedOnlyGroup, false, false);
-    }
-
-
-    private void setGroupEnabled(View[] group, boolean enabled, boolean disableOnly)
-    {
-        for (int i = 0; i < group.length; ++i) {
-            View v = group[i];
-
-            if (v != null) {
-                if (disableOnly && !enabled && v.isEnabled() == true) {
-                    v.setEnabled(enabled);
-                } else if (!disableOnly) {
-                    v.setEnabled(enabled);
-                }
-            }
-        }
-    }
-
-
-    private void setGroupVisible(View[] group, boolean visible)
-    {
-        for (int i = 0; i < group.length; ++i) {
-            View v = group[i];
-
-            if (v != null) {
-                v.setVisibility(visible ? View.VISIBLE : View.GONE);
-            }
-        }
     }
 }

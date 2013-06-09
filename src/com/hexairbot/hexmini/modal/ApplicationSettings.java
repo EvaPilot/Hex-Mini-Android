@@ -57,11 +57,6 @@ public class ApplicationSettings {
 				Channel oneChannel = new Channel(this, channelIdx);
 				channels.add(oneChannel);
 			}	
-			
-			setInterfaceOpacity(0.8f);
-			save();
-			
-			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -168,7 +168,6 @@ public class SettingsDialog extends DialogFragment
 
     private void initListeners()
     {
-        settingsVC.setCheckBoxesCheckedListener(this);
 //        view.setSeekBarsOnChangeListener(this);
 //        view.setNetworkNameOnEditorActionListener(this);
 //        view.setRadioButtonsCheckedListener(this);
